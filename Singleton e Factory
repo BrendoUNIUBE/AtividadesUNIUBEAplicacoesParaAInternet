@@ -1,0 +1,90 @@
+<?php
+class ProdutoA implements Produto{
+    
+    public function nome(){
+        return "ProdutoA";
+    }
+}
+<?php
+class ProdutoAFactory extends ProdutoFactory{
+    public function criarProduto(){
+        return new ProdutoA();
+    }
+}
+<?php
+class ProdutoB implements Produto{
+    
+    public function nome(){
+        return "ProdutoB";
+    }
+}
+<?php
+class ProdutoBFactory extends ProdutoFactory{
+    public function criarProduto(){
+        return new ProdutoB();
+    }
+}
+<?php
+abstract class ProdutoFactory{
+
+    abstract public function criarProduto();
+    
+}
+
+<?php
+
+class DBSingleton {
+    private static $instance;
+    private $dsn;
+    private $user;
+    private $password;
+    private $options;
+    private $PDO;
+
+    private function __construct($dsn,$user,$password,$options){
+        $this->dsn = $dsn;
+        $this->user = $user;
+        $this->password = $password;
+        $this->options = $options;
+        
+    }
+
+    public static function getInstance($dsn,$user,$password,$options = null){
+        if(self::$instance != null){
+            self::$instance = new DBSingleton($dsn,$user,$password,$options);
+        }
+        return self::$instance;
+    }
+
+    public function connect(){
+        $this->PDO = new PDO($this->dsn,$this->user,$this->password,$this->options);
+    }
+
+    public function query($sql){
+        $stmt = $this->PDO->query($sql);
+        return $stmt->fetchAll();
+    }
+}
+<?php
+/*$db = DBSingleton::getInstance("localhost","admin","");
+
+$db->connect();
+
+$arrUsuarios = $db->query("select * from usuarios");
+
+foreach($arrUsuarios as $usu){
+    print_r($usu);
+}
+
+$arrClientes = $db->query("select * from clientes");*/
+
+$factory = new ProdutoBFactory();
+$produto = $factory->criarProduto();
+
+echo $produto->nome();  // ProdutoA
+
+?>
+<?php
+interface Produto{
+    public function nome();
+}
